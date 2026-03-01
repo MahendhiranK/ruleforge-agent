@@ -89,5 +89,10 @@ For a reusable action wrapper, see:
 ## Security note
 AI remediation is allowlisted and should be expanded cautiously. The framework is designed for governance-first adoption.
 
+## 📚 Author
+
+Mahendhiran Krishnan  
+LinkedIn: [Mahendhiran Krishnan](https://www.linkedin.com/in/mahendhiran-krishnan-04a5292b/)
+
 ## License
 MIT
