@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QualityAgent.Cli", "src\QualityAgent.Cli\QualityAgent.Cli.csproj", "{902DAB7E-6670-4BD4-B666-693C0AEB2530}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QualityAgent.Core", "src\QualityAgent.Core\QualityAgent.Core.csproj", "{88049A70-CDA3-4F69-B844-012A36DBB276}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{902DAB7E-6670-4BD4-B666-693C0AEB2530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{902DAB7E-6670-4BD4-B666-693C0AEB2530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{902DAB7E-6670-4BD4-B666-693C0AEB2530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{902DAB7E-6670-4BD4-B666-693C0AEB2530}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88049A70-CDA3-4F69-B844-012A36DBB276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88049A70-CDA3-4F69-B844-012A36DBB276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88049A70-CDA3-4F69-B844-012A36DBB276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88049A70-CDA3-4F69-B844-012A36DBB276}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

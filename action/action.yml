@@ -1,0 +1,50 @@
+name: "RuleForge Agent"
+description: "Policy-driven SonarQube enforcement, reporting, safe autofix, and optional Azure AI Foundry remediation for .NET"
+inputs:
+  policy:
+    description: "Path to policy.yml"
+    required: false
+    default: ".qualityagent/policy.yml"
+  pr:
+    description: "Pull request number"
+    required: false
+  branch:
+    description: "Branch name"
+    required: false
+  mode:
+    description: "check | autofix"
+    required: false
+    default: "check"
+  install_source:
+    description: "nuget | source (nuget requires publishing RuleForge.Agent)"
+    required: false
+    default: "source"
+  version:
+    description: "Tool version when install_source=nuget"
+    required: false
+    default: "0.1.0"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Install RuleForge tool (NuGet)
+      if: inputs.install_source == 'nuget'
+      shell: bash
+      run: |
+        dotnet tool install -g RuleForge.Agent --version "${{ inputs.version }}"
+        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+    - name: Run RuleForge (tool)
+      if: inputs.install_source == 'nuget'
+      shell: bash
+      run: |
+        ruleforge ${{ inputs.mode }} --policy "${{ inputs.policy }}" --pr "${{ inputs.pr }}" --branch "${{ inputs.branch }}"
+
+    - name: Run RuleForge (from source)
+      if: inputs.install_source == 'source'
+      shell: bash
+      run: |
+        dotnet run --project src/QualityAgent.Cli -- ${{ inputs.mode }} --policy "${{ inputs.policy }}" --pr "${{ inputs.pr }}" --branch "${{ inputs.branch }}"

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>quality-agent</AssemblyName>
+    <RootNamespace>QualityAgent</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>ruleforge</ToolCommandName>
+    <PackageId>RuleForge.Agent</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Mahendhiran Krishnan</Authors>
+    <Company>Community</Company>
+    <RepositoryUrl>https://github.com/<YOUR_ORG>/ruleforge-agent</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/<YOUR_ORG>/ruleforge-agent</PackageProjectUrl>
+    <Description>RuleForge Agent: policy-driven SonarQube enforcement, reporting, safe autofix, and optional Azure AI Foundry remediation for .NET microservices.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QualityAgent.Core\QualityAgent.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>
