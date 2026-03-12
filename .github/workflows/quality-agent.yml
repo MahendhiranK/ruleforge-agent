@@ -26,4 +26,4 @@ jobs:
         run: dotnet build -c Release
 
       - name: Run RuleForge Agent
-        run: dotnet run --project src/QualityAgent.Cli
+        run: dotnet run --project src/QualityAgent.Cli -- check --policy .qualityagent/policy.yml --no-sonar
