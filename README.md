@@ -89,8 +89,6 @@ For a reusable action wrapper, see:
 ## Security note
 AI remediation is allowlisted and should be expanded cautiously. The framework is designed for governance-first adoption.
 
-## Please note : Upload the Prompt insturction file to have all SonarQube rule code
-
 ## 📚 Author
 
 Mahendhiran Krishnan  
