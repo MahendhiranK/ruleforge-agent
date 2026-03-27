@@ -86,7 +86,7 @@ A workflow template is included at:
 For a reusable action wrapper, see:
 - `action/action.yml`
 
-## Security note
+## Note: Security considerations
 AI remediation is allowlisted and should be expanded cautiously. The framework is designed for governance-first adoption.
 
 ## 📚 Author
