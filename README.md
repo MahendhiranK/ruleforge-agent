@@ -9,7 +9,7 @@ RuleForge Agent is a policy-driven quality agent for .NET microservices that int
 - **GitHub Action** and **.NET tool** packaging for easy adoption
 
 This repository ships an enforced C# rule list at:
-- `.qualityagent/enforce-rules.txt` (450 rule keys)
+- `qualityagent/enforce-rules.txt` (450 rule keys)
 
 ## Install (like npm install)
 
