@@ -26,7 +26,6 @@ ruleforge --help
 dotnet build
 dotnet run --project src/QualityAgent.Cli -- check --policy .qualityagent/policy.yml --no-sonar
 ```
-
 ## Commands
 
 ### 1) Check (report + gate)
