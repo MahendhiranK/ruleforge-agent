@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QualityAgent.Cli", "src\Qua
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QualityAgent.Core", "src\QualityAgent.Core\QualityAgent.Core.csproj", "{88049A70-CDA3-4F69-B844-012A36DBB276}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QualityAgent.Core.Tests", "tests\QualityAgent.Core.Tests\QualityAgent.Core.Tests.csproj", "{26C9A83C-0CF7-4E86-A148-FB7AEFD6418E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{88049A70-CDA3-4F69-B844-012A36DBB276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88049A70-CDA3-4F69-B844-012A36DBB276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88049A70-CDA3-4F69-B844-012A36DBB276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C9A83C-0CF7-4E86-A148-FB7AEFD6418E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C9A83C-0CF7-4E86-A148-FB7AEFD6418E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C9A83C-0CF7-4E86-A148-FB7AEFD6418E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C9A83C-0CF7-4E86-A148-FB7AEFD6418E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
