@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using QualityAgent.Core.Security;
 
 namespace QualityAgent.Core.AiFoundry;
 
@@ -8,6 +9,7 @@ public sealed class AiFoundryClient
 {
     private readonly HttpClient _http;
     private readonly string _model;
+    private readonly string _apiKey;
 
     public AiFoundryClient(string endpoint, string apiKey, string model)
     {
@@ -16,6 +18,7 @@ public sealed class AiFoundryClient
         if (string.IsNullOrWhiteSpace(model)) throw new ArgumentException("model is required");
 
         _model = model;
+        _apiKey = apiKey;
 
         _http = new HttpClient { BaseAddress = new Uri(endpoint.TrimEnd('/') + "/") };
         _http.DefaultRequestHeaders.Add("api-key", apiKey);
@@ -63,7 +66,8 @@ public sealed class AiFoundryClient
         var body = await resp.Content.ReadAsStringAsync(ct);
 
         if (!resp.IsSuccessStatusCode)
-            throw new InvalidOperationException($"Foundry chat completions failed: {resp.StatusCode}. Body: {body}");
+            throw new InvalidOperationException(
+                $"Foundry chat completions failed: {resp.StatusCode}. Body: {Redactor.Scrub(body, _apiKey)}");
 
         using var doc = JsonDocument.Parse(body);
         var content = doc.RootElement
