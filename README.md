@@ -89,7 +89,7 @@ For a reusable action wrapper, see:
 
 See RuleForge Agent in action — a walkthrough of the actual `autofix` run against the sample-before/after files in this repo:
 
-👉 **[Try the interactive demo](https://mahendhirank.github.io/ruleforge-agent/demo.html)**
+👉 **[Try the interactive demo](https://mahendhirank.github.io/ruleforge-agent/ruleforge-demo.html)**
 
 ## Note: Security considerations
 AI remediation is allowlisted and should be expanded cautiously. The framework is designed for governance-first adoption.
