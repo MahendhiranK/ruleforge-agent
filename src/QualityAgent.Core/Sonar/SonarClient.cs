@@ -1,24 +1,29 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using QualityAgent.Core.Security;
 
 namespace QualityAgent.Core.Sonar;
 
 public sealed class SonarClient
 {
     private readonly HttpClient _http;
+    private readonly string _token;
+    private readonly string _basicAuthValue;
 
     public SonarClient(string serverUrl, string token)
     {
         if (string.IsNullOrWhiteSpace(serverUrl)) throw new ArgumentException("serverUrl is required");
         if (string.IsNullOrWhiteSpace(token)) throw new ArgumentException("token is required");
 
+        _token = token;
+
         _http = new HttpClient
         {
             BaseAddress = new Uri(serverUrl.TrimEnd('/') + "/")
         };
 
-        var basic = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{token}:"));
-        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basic);
+        _basicAuthValue = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{token}:"));
+        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", _basicAuthValue);
     }
 
     public async Task<List<SonarIssue>> GetIssuesAsync(string projectKey, int? prNumber, string? branch, bool onlyNewCode, CancellationToken ct)
@@ -50,7 +55,8 @@ public sealed class SonarClient
             var body = await resp.Content.ReadAsStringAsync(ct);
 
             if (!resp.IsSuccessStatusCode)
-                throw new InvalidOperationException($"SonarQube API call failed: {resp.StatusCode}. Body: {body}");
+                throw new InvalidOperationException(
+                    $"SonarQube API call failed: {resp.StatusCode}. Body: {Redactor.Scrub(body, _token, _basicAuthValue)}");
 
             using var doc = JsonDocument.Parse(body);
             var issuesElem = doc.RootElement.GetProperty("issues");
