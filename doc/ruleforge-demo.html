@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RuleForge Agent — Live Demo</title>
+<style>
+  :root{
+    --ink:#0E1420;
+    --ink-2:#161D2C;
+    --panel:#111827;
+    --rule:#293349;
+    --parchment:#F4F1E6;
+    --parchment-dim:#E7E2D1;
+    --ink-on-parchment:#1B1A16;
+    --amber:#E8A33D;
+    --teal:#3FA796;
+    --brick:#C1443C;
+    --muted:#8892A6;
+    --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: 'IBM Plex Sans', -apple-system, Segoe UI, sans-serif;
+    --serif: 'IBM Plex Serif', Georgia, serif;
+  }
+  @media (prefers-color-scheme: light){ }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1100px 480px at 15% -10%, rgba(63,167,150,.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(232,163,61,.08), transparent 55%),
+      var(--ink);
+    color:#DDE3EE;
+    font-family:var(--sans);
+    min-height:100vh;
+    padding: 48px 20px 90px;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+
+  /* header */
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--teal); display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(63,167,150,.18);}
+  h1{
+    font-family:var(--serif); font-weight:600; font-size:clamp(28px,4.4vw,42px);
+    margin:0 0 10px; letter-spacing:-.01em; color:#F3F1E8;
+  }
+  .sub{color:var(--muted); font-size:15.5px; line-height:1.6; max-width:640px; margin:0 0 30px;}
+  .sub code{font-family:var(--mono); background:rgba(255,255,255,.06); padding:1px 6px; border-radius:4px; font-size:13.5px; color:#C9D6E3;}
+
+  .runbar{display:flex; align-items:center; gap:14px; margin-bottom:34px; flex-wrap:wrap;}
+  button.run{
+    font-family:var(--mono); font-size:13.5px; letter-spacing:.02em;
+    background:var(--teal); color:#062622; border:none; padding:11px 20px; border-radius:7px;
+    cursor:pointer; font-weight:600; transition:transform .12s ease, box-shadow .12s ease;
+    box-shadow:0 1px 0 rgba(0,0,0,.2), 0 6px 18px -8px rgba(63,167,150,.6);
+  }
+  button.run:hover{transform:translateY(-1px);}
+  button.run:active{transform:translateY(0);}
+  button.run:disabled{opacity:.5; cursor:default; transform:none;}
+  .runbar .hint{font-family:var(--mono); font-size:12px; color:var(--muted);}
+
+  /* terminal */
+  .term{
+    background:var(--ink-2); border:1px solid var(--rule); border-radius:10px;
+    overflow:hidden; margin-bottom:28px;
+    box-shadow:0 20px 50px -30px rgba(0,0,0,.7);
+  }
+  .term-bar{
+    display:flex; align-items:center; gap:8px; padding:11px 14px; border-bottom:1px solid var(--rule);
+    background:rgba(255,255,255,.02);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.r{background:#E5645A;} .dot.y{background:#E8B93D;} .dot.g{background:#3FA796;}
+  .term-title{font-family:var(--mono); font-size:12px; color:var(--muted); margin-left:8px;}
+  .term-body{
+    font-family:var(--mono); font-size:13.2px; line-height:1.7; padding:18px 18px 22px;
+    min-height:230px; white-space:pre-wrap; word-break:break-word;
+  }
+  .term-line{opacity:0; animation:rise .28s ease forwards;}
+  @keyframes rise{ from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:translateY(0);} }
+  .prompt{color:var(--teal);} .cmd{color:#F3F1E8;}
+  .ok{color:var(--teal);} .warn{color:var(--amber);} .fail{color:var(--brick);}
+  .dim{color:var(--muted);}
+  .cursor{display:inline-block;width:7px;height:14px;background:#C9D6E3;vertical-align:-2px;animation:blink 1s step-end infinite;}
+  @keyframes blink{ 50%{opacity:0;} }
+
+  /* section labels */
+  .section-label{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); margin: 6px 0 12px; display:flex; align-items:center; gap:10px;
+  }
+  .section-label::after{content:"";flex:1;height:1px;background:var(--rule);}
+
+  .reveal{opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* diff */
+  .diff-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px;}
+  @media (max-width:680px){ .diff-grid{grid-template-columns:1fr;} }
+  .code-card{background:var(--panel); border:1px solid var(--rule); border-radius:10px; overflow:hidden;}
+  .code-head{
+    padding:10px 14px; border-bottom:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:12px;
+  }
+  .code-head .file{color:#C9D6E3;}
+  .badge{font-family:var(--mono); font-size:10.5px; padding:3px 8px; border-radius:20px; letter-spacing:.04em;}
+  .badge.before{background:rgba(193,68,60,.16); color:#F0A29C;}
+  .badge.after{background:rgba(63,167,150,.16); color:#8FE0D1;}
+  pre.code{margin:0; padding:14px 16px; font-family:var(--mono); font-size:12.6px; line-height:1.65; overflow-x:auto;}
+  .code .rm{background:rgba(193,68,60,.14); display:block; margin:0 -16px; padding:0 16px; color:#F0A29C;}
+  .code .add{background:rgba(63,167,150,.12); display:block; margin:0 -16px; padding:0 16px; color:#B9EFE3;}
+  .code .kw{color:#9FB4E8;} .code .type{color:#E8C07D;}
+
+  /* governance report */
+  .report{
+    background:var(--parchment); color:var(--ink-on-parchment); border-radius:12px;
+    padding:26px 26px 22px; margin-bottom:10px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.55);
+  }
+  .report-top{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px; margin-bottom:18px;}
+  .report h2{font-family:var(--serif); font-size:21px; margin:0 0 4px; letter-spacing:-.01em;}
+  .report .meta{font-family:var(--mono); font-size:11.5px; color:#63604F;}
+  .gate{
+    font-family:var(--mono); font-weight:700; font-size:13px; letter-spacing:.08em;
+    padding:9px 16px; border-radius:8px; background:#274B3E; color:#B9EFE3; white-space:nowrap;
+  }
+  table{width:100%; border-collapse:collapse; margin-bottom:18px;}
+  th,td{text-align:left; padding:9px 6px; font-size:13px; border-bottom:1px solid var(--parchment-dim);}
+  th{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:#7A755F; font-weight:600;}
+  td.rule{font-family:var(--mono); font-size:12.3px;}
+  .status{font-family:var(--mono); font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:5px;}
+  .status.pass{background:rgba(63,167,150,.18); color:#1E6E5C;}
+  .status.fail{background:rgba(193,68,60,.14); color:#9C3129;}
+  .bars{display:flex; gap:22px; flex-wrap:wrap; margin-bottom:6px;}
+  .bar-item{flex:1; min-width:110px;}
+  .bar-label{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:#7A755F; margin-bottom:6px; display:flex; justify-content:space-between;}
+  .bar-track{height:7px; border-radius:4px; background:var(--parchment-dim); overflow:hidden;}
+  .bar-fill{height:100%; border-radius:4px; transition:width .8s cubic-bezier(.2,.8,.2,1);}
+  .footnote{font-family:var(--mono); font-size:11px; color:#8A8570; margin-top:14px; line-height:1.6;}
+
+  footer{max-width:920px; margin:36px auto 0; font-family:var(--mono); font-size:11.5px; color:var(--muted); text-align:center; line-height:1.9;}
+  footer a{color:var(--teal); text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">ruleforge-agent · policy-driven quality governance</div>
+  <h1>Watch it turn Sonar findings into a governed, autofixed PR.</h1>
+  <p class="sub">This replays a real run against a sample file, <code>LoanService.cs</code>, using the project's own <code>.qualityagent/policy.yml</code> and 450-rule enforcement list. Nothing here calls a live SonarQube or Azure AI Foundry endpoint — it's a faithful walkthrough of what <code>ruleforge autofix</code> actually produces.</p>
+
+  <div class="runbar">
+    <button class="run" id="runBtn">▶ ruleforge autofix --policy .qualityagent/policy.yml</button>
+    <span class="hint" id="hint">click to run</span>
+  </div>
+
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">bash — LoanProcessing.Api</span>
+    </div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+
+  <div id="diffSection" class="reveal">
+    <div class="section-label">before / after — src/LoanService.cs</div>
+    <div class="diff-grid">
+      <div class="code-card">
+        <div class="code-head"><span class="file">LoanService.cs</span><span class="badge before">3 issues</span></div>
+        <pre class="code"><span class="kw">namespace</span> LoanProcessing.Api;
+
+<span class="kw">public class</span> <span class="type">LoanService</span>
+{
+    <span class="kw">public decimal</span> CalculateLoan(<span class="kw">decimal</span> amount)
+    {
+<span class="rm">        int unused = 100;
+</span>
+<span class="rm">        // if (amount &gt; 0) return amount;
+</span>
+        if (amount &gt; 0)
+<span class="rm">        {
+</span>            if (amount &gt; 1000)
+            {
+                return amount * 1.05m;
+            }
+<span class="rm">        }
+</span>
+        return amount;
+    }
+}</pre>
+      </div>
+      <div class="code-card">
+        <div class="code-head"><span class="file">LoanService.cs</span><span class="badge after">0 issues</span></div>
+        <pre class="code"><span class="kw">namespace</span> LoanProcessing.Api;
+
+<span class="kw">public class</span> <span class="type">LoanService</span>
+{
+    <span class="kw">public decimal</span> CalculateLoan(<span class="kw">decimal</span> amount)
+    {
+<span class="add">        if (amount &gt; 1000)
+</span><span class="add">        {
+</span><span class="add">            return amount * 1.05m;
+</span><span class="add">        }
+</span>
+        return amount;
+    }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportSection" class="reveal">
+    <div class="section-label">generated report — artifacts/quality-report.md</div>
+    <div class="report">
+      <div class="report-top">
+        <div>
+          <h2>QualityAgent Report</h2>
+          <div class="meta">generated · LoanProcessing.Api · branch feature/loan-cleanup</div>
+        </div>
+        <div class="gate">QUALITY GATE: PASSED</div>
+      </div>
+
+      <table>
+        <thead><tr><th>Enforced Rule</th><th>Description</th><th>Before</th><th>After</th></tr></thead>
+        <tbody>
+          <tr><td class="rule">csharpsquid:S1481</td><td>Unused local variables</td><td><span class="status fail">FAIL</span></td><td><span class="status pass">PASS</span></td></tr>
+          <tr><td class="rule">csharpsquid:S125</td><td>Commented-out code</td><td><span class="status fail">FAIL</span></td><td><span class="status pass">PASS</span></td></tr>
+          <tr><td class="rule">csharpsquid:S1066</td><td>Collapsible if statements</td><td><span class="status fail">FAIL</span></td><td><span class="status pass">PASS</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="bars" id="bars">
+        <div class="bar-item">
+          <div class="bar-label"><span>Blocker</span><span id="lbl-blocker">0 → 0</span></div>
+          <div class="bar-track"><div class="bar-fill" id="bar-blocker" style="width:0%; background:#C1443C;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>Critical</span><span id="lbl-critical">0 → 0</span></div>
+          <div class="bar-track"><div class="bar-fill" id="bar-critical" style="width:0%; background:#C1443C;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>Major</span><span id="lbl-major">3 → 0</span></div>
+          <div class="bar-track"><div class="bar-fill" id="bar-major" style="width:0%; background:#E8A33D;"></div></div>
+        </div>
+      </div>
+
+      <div class="footnote">AutoFix summary — dotnet format: applied · AI Foundry fixes (allowlisted rules only): 2 applied · files touched: 1 · rebuild after fix: PASS</div>
+    </div>
+  </div>
+
+  <footer>
+    generated from the actual policy.yml / enforce-rules.txt / sample-before &amp; sample-after files in <a href="https://github.com/MahendhiranK/ruleforge-agent" target="_blank" rel="noopener">MahendhiranK/ruleforge-agent</a>
+    <br />
+    Author : Mahendhiran Krishnan — <a href="https://www.linkedin.com/in/mahendhiran-krishnan-04a5292b/" target="_blank" rel="noopener">LinkedIn</a>
+  </footer>
+</div>
+
+<script>
+const termBody = document.getElementById('termBody');
+const runBtn = document.getElementById('runBtn');
+const hint = document.getElementById('hint');
+const diffSection = document.getElementById('diffSection');
+const reportSection = document.getElementById('reportSection');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const lines = [
+  {html:'<span class="prompt">$</span> <span class="cmd">ruleforge autofix --policy .qualityagent/policy.yml --branch feature/loan-cleanup</span>', delay: 120},
+  {html:'', delay: 40},
+  {html:'Running: dotnet build -c Release', delay: 90},
+  {html:'<span class="ok">✓ build succeeded</span>', delay: 260},
+  {html:'Running: dotnet test -c Release --no-build', delay: 90},
+  {html:'<span class="ok">✓ tests passed (0 failed)</span>', delay: 300},
+  {html:'Querying SonarQube for LoanProcessing.Api (new code only)...', delay: 110},
+  {html:'<span class="warn">3 issues found</span> — csharpsquid:S1481, csharpsquid:S125, csharpsquid:S1066', delay: 300},
+  {html:'', delay: 30},
+  {html:'AutoFix: Running dotnet format', delay: 90},
+  {html:'<span class="ok">✓ formatting applied</span>', delay: 240},
+  {html:'AutoFix: AI Foundry remediation (allowlisted rules only)', delay: 100},
+  {html:'<span class="dim">  → csharpsquid:S1481 in LoanService.cs</span> <span class="ok">fixed</span>', delay: 260},
+  {html:'<span class="dim">  → csharpsquid:S125 in LoanService.cs</span> <span class="ok">fixed</span>', delay: 260},
+  {html:'<span class="dim">  → csharpsquid:S1066 left to dotnet format (structural, not AI-eligible)</span>', delay: 260},
+  {html:'AutoFix: Verifying build after fixes', delay: 100},
+  {html:'<span class="ok">✓ build succeeded (post-fix)</span>', delay: 280},
+  {html:'', delay: 30},
+  {html:'Re-querying SonarQube...  <span class="ok">0 issues remaining</span>', delay: 300},
+  {html:'Writing artifacts/quality-report.md and quality-report.json', delay: 200},
+  {html:'', delay: 30},
+  {html:'QualityAgent outcome: <span class="ok" style="font-weight:700;">PASS</span>', delay: 200},
+];
+
+let running = false;
+
+function appendLine(html){
+  const div = document.createElement('div');
+  div.className = 'term-line';
+  div.innerHTML = html || '&nbsp;';
+  if(reduceMotion) div.style.animation = 'none', div.style.opacity = 1;
+  termBody.appendChild(div);
+  termBody.scrollTop = termBody.scrollHeight;
+}
+
+function sleep(ms){ return new Promise(r => setTimeout(r, reduceMotion ? Math.min(ms,20) : ms)); }
+
+async function playRun(){
+  if(running) return;
+  running = true;
+  runBtn.disabled = true;
+  hint.textContent = 'running…';
+  termBody.innerHTML = '';
+  diffSection.classList.remove('in');
+  reportSection.classList.remove('in');
+  ['blocker','critical','major'].forEach(k => document.getElementById('bar-'+k).style.width = '0%');
+
+  for(const line of lines){
+    appendLine(line.html);
+    await sleep(line.delay);
+  }
+  const cur = document.createElement('span');
+  cur.className = 'cursor';
+  termBody.lastElementChild.appendChild(document.createTextNode(' '));
+  termBody.lastElementChild.appendChild(cur);
+
+  await sleep(200);
+  diffSection.classList.add('in');
+  await sleep(250);
+  reportSection.classList.add('in');
+  await sleep(150);
+
+  document.getElementById('bar-blocker').style.width = '0%';
+  document.getElementById('bar-critical').style.width = '0%';
+  document.getElementById('bar-major').style.width = '0%';
+  await sleep(300);
+  document.getElementById('bar-major').style.width = '82%';
+
+  hint.textContent = 'run again';
+  runBtn.disabled = false;
+  running = false;
+}
+
+runBtn.addEventListener('click', playRun);
+window.addEventListener('load', () => setTimeout(playRun, 350));
+</script>
+</body>
+</html>
