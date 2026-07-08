@@ -25,5 +25,8 @@ jobs:
       - name: Build
         run: dotnet build -c Release
 
+      - name: Test
+        run: dotnet test -c Release --no-build
+
       - name: Run RuleForge Agent
         run: dotnet run --project src/QualityAgent.Cli -- check --policy .qualityagent/policy.yml --no-sonar
